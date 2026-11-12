@@ -77,7 +77,7 @@ let player = {
     x: canvas.width / 2,
     y: canvas.height / 2,
     size: 20,
-    speed: 1.5,
+    speed: 3.5,
     maxHp: 100 + gameData.maxHpBonus,
     hp: 100 + gameData.maxHpBonus,
     attackSpeedMultiplier: 1,
@@ -247,7 +247,7 @@ setInterval(() => {
         x: Math.random() < 0.5 ? 0 : canvas.width,
         y: Math.random() * canvas.height,
         size: 12,
-        speed: (gameTime/15)+0.7,
+        speed: player.speed + gameTime/10,
         hp: gameTime/10
     });
 }, 1200);
