@@ -1,0 +1,316 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #120c1f;
+    color: #f3f0ff;
+    font-family: 'Poppins', sans-serif;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.screen {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Pantalla de inicio */
+.menu-box {
+    background: #1a122e;
+    padding: 40px;
+    border-radius: 16px;
+    text-align: center;
+    border: 2px solid #b794f4;
+    box-shadow: 0 0 25px rgba(183, 148, 244, 0.3);
+}
+
+.menu-box h1 {
+    color: #d6bcfa;
+    margin-bottom: 10px;
+}
+
+.main-btn {
+    background: #9f7aea;
+    color: #120c1f;
+    font-size: 1.2rem;
+    padding: 12px 30px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.2s;
+}
+
+.main-btn:hover {
+    background: #b794f4;
+}
+
+/* Layout Principal de Pantalla Completa */
+.main-layout-row {
+    display: flex;
+    gap: 12px;
+    align-items: stretch; /* Estira todas las columnas a la misma altura exactamente */
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* Columnas de Fichas (Izquierda y Derecha) */
+.side-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distribuye las 3 fichas de arriba a abajo perfectamente */
+    gap: 10px;
+    width: 280px;
+    flex-shrink: 0;
+}
+
+/* Columnas Centrales */
+.center-column {
+    background: #1a122e;
+    padding: 12px;
+    border-radius: 12px;
+    border: 2px solid #6b46c1;
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Ocupa todo el alto */
+}
+
+/* Área de Juego (Canvas + HUD) */
+.game-area {
+    flex: 1; /* Permite que el juego tome todo el espacio horizontal sobrante */
+    align-items: center;
+    justify-content: flex-start;
+}
+
+#hud {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    background: #120c1f;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    border: 1px solid #44337a;
+    flex-shrink: 0;
+}
+
+canvas {
+    border: 2px solid #9f7aea;
+    background-color: #0b0714;
+    border-radius: 6px;
+    box-shadow: 0 0 15px rgba(159, 122, 234, 0.2);
+    width: 100%;
+    height: calc(100% - 50px);
+    object-fit: contain; /* <--- Esto evita que se deforme y mantiene la proporción circular */
+    display: block;
+    margin: auto;
+}
+
+/* Menú Lateral */
+.side-menu {
+    width: 250px;
+    flex-shrink: 0;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.side-menu h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #d6bcfa;
+    text-align: center;
+}
+
+.vertical-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+hr {
+    width: 90%;
+    border: 0;
+    border-top: 1px solid #44337a;
+    margin: 2px 0;
+}
+
+.char-btn, .shop-btn {
+    background: #24193f;
+    border: 1px solid #805ad5;
+    color: #f3f0ff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+    text-align: left;
+}
+
+.char-btn:hover, .shop-btn:hover {
+    background: #6b46c1;
+}
+
+.char-btn.active {
+    background: #9f7aea;
+    color: #120c1f;
+    font-weight: bold;
+}
+
+.stats-box {
+    font-size: 0.8rem;
+    color: #b794f4;
+    text-align: center;
+    width: 100%;
+    background: #120c1f;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #44337a;
+}
+
+/* Tarjeta Ficha 3D - Forzamos formato cuadrado perfecto */
+.lore-card {
+    background-color: transparent;
+    width: 100%;
+    aspect-ratio: 1 / 1; /* Esto obliga a que la tarjeta sea siempre un cuadrado perfecto */
+    perspective: 1000px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.lore-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    border-radius: 10px;
+}
+
+.lore-card.flipped .lore-card-inner {
+    transform: rotateY(180deg);
+}
+
+.lore-front, .lore-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 6px;
+    border: 2px solid #6b46c1;
+    background: #1a122e;
+}
+
+.lore-front img {
+    width: 100%;
+    height: calc(100% - 22px);
+    object-fit: contain; /* Evita que la imagen se deforme o se estire */
+    border-radius: 6px;
+    border: 1px solid #b794f4;
+}
+
+.lore-front h4 {
+    font-size: 0.75rem;
+    margin-top: 3px;
+    color: #d6bcfa;
+}
+
+.lore-back {
+    background: #120c1f;
+    color: #b794f4;
+    transform: rotateY(180deg);
+    font-size: 0.7rem;
+    line-height: 1.25;
+    overflow-y: auto;
+    border-color: #b794f4;
+    justify-content: center;
+    padding: 8px;
+}
+
+/* Modales flotantes (Level Up y Victoria) */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(11, 7, 20, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #1a122e;
+    border: 2px solid #b794f4;
+    padding: 30px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(183, 148, 244, 0.4);
+    max-width: 450px;
+    width: 90%;
+}
+
+.modal-content h2 {
+    color: #d6bcfa;
+    margin-bottom: 20px;
+}
+
+.upgrade-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.choice-btn {
+    background: #24193f;
+    border: 1px solid #9f7aea;
+    color: #f3f0ff;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.choice-btn:hover {
+    background: #6b46c1;
+    transform: scale(1.02);
+}
+
+.victory-box {
+    border-color: #ecc94b;
+    box-shadow: 0 0 35px rgba(236, 201, 75, 0.4);
+}
+
+.victory-box h2 {
+    color: #ecc94b;
+}

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapaches vs Hordas - Tarjeta Web</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Pantalla de Inicio (Inalterada) -->
+    <div id="startScreen" class="screen">
+        <div class="menu-box">
+            <h1>¡Sobrevive con los Mapaches!</h1>
+            <p>Junta monedas, desbloquea la banda y supera el desafío.</p>
+            <button class="main-btn" onclick="startGame()">¡Pelear!</button>
+        </div>
+    </div>
+
+    <!-- Pantalla Principal de Juego (Corregida según boceto de imagen) -->
+    <div id="gameScreen" class="screen hidden">
+        
+        <!-- Fila Única: [Fichas Izq] [Juego] [Menú] [Fichas Der] -->
+        <div class="main-layout-row">
+            
+            <!-- 1. Fichas Personajes (Izquierda, 3 cartas) -->
+            <div class="side-column side-fichas" id="leftLore">
+                <!-- Se llenan por JS -->
+            </div>
+
+            <!-- 2. Área Central (HUD + Canvas) -->
+            <div class="center-column game-area">
+                <div id="hud">
+                    <span>🪙 <b id="coinCount">0</b></span>
+                    <span>⭐ Lv: <b id="levelCount">1</b></span>
+                    <span>EXP: <b id="expCount">0/5</b></span>
+                    <span>❤️ HP: <b id="hpCount">100</b></span>
+                    <span>⏱️ <b id="timeCount">0s</b></span>
+                    <button id="pauseBtn" onclick="togglePause()">Pausa</button>
+                </div>
+                <canvas id="gameCanvas" width="750" height="635"></canvas>
+            </div>
+
+            <!-- Modal de Subida de Nivel (Level Up) -->
+            <div id="levelUpModal" class="modal hidden">
+                <div class="modal-content">
+                    <h2>¡Nivel Súper! Elige una mejora:</h2>
+                    <div id="levelUpChoices" class="upgrade-choices"></div>
+                </div>
+            </div>
+
+            <!-- Modal de Premio Final de Cumpleaños / Victoria -->
+            <div id="victoryModal" class="modal hidden">
+                <div class="modal-content victory-box">
+                    <h2>🎉 ¡Feliz Cumpleaños! 🎉</h2>
+                    <p>¡Has sobrevivido a la horda y demostrado el poder de la banda de mapaches!</p>
+                    <p id="victoryRewardText">Has desbloqueado un mensaje secreto y un premio especial canjeable con una captura de este cartel.</p>
+                    <button class="main-btn" onclick="location.reload()">Volver al Inicio</button>
+                </div>
+            </div>
+
+            <!-- 3. Menú Lateral (A la derecha del juego) -->
+            <div class="center-column side-menu" id="sidePanel">
+                <h3>Mapaches</h3>
+                <div id="characterList" class="vertical-list">
+                    <!-- Botones de tienda por JS -->
+                </div>
+                
+                <hr>
+
+                <h3>Mejoras</h3>
+                <div id="upgradeList" class="vertical-list">
+                    <button class="shop-btn" onclick="buyUpgrade('hp')">+20 HP (50 🪙)</button>
+                    <button class="shop-btn" onclick="buyUpgrade('damage')">+1 Daño (75 🪙)</button>
+                </div>
+
+                <hr>
+                
+                <div class="stats-box">
+                    Partidas: <b id="statGames">0</b><br>
+                    Kills: <b id="statKills">0</b>
+                </div>
+            </div>
+
+            <!-- 1. Fichas Personajes (Derecha, 3 cartas) -->
+            <div class="side-column side-fichas" id="rightLore">
+                <!-- Se llenan por JS -->
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
