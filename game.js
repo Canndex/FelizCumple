@@ -4,7 +4,7 @@ const ctx = canvas.getContext("2d");
 let bgImage = new Image();
 bgImage.src = "img/fondo.png";
 
-let gameData = JSON.parse(localStorage.getItem("surviveGameDataV6")) || {
+let gameData = JSON.parse(localStorage.getItem("surviveGameDataV8")) || {
     coins: 0,
     selectedChar: 0,
     unlockedChars: [true, false, false, false, false],
@@ -15,7 +15,7 @@ let gameData = JSON.parse(localStorage.getItem("surviveGameDataV6")) || {
 };
 
 function saveGame() {
-    localStorage.setItem("surviveGameDataV6", JSON.stringify(gameData));
+    localStorage.setItem("surviveGameDataV8", JSON.stringify(gameData));
 }
 
 // 5 Personajes con sus armas configuradas
