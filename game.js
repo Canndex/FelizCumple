@@ -4,7 +4,7 @@ const ctx = canvas.getContext("2d");
 let bgImage = new Image();
 bgImage.src = "img/fondo.png";
 
-let gameData = JSON.parse(localStorage.getItem("surviveGameDataV8")) || {
+let gameData = JSON.parse(localStorage.getItem("surviveGameDataV6")) || {
     coins: 0,
     selectedChar: 0,
     unlockedChars: [true, false, false, false, false],
@@ -15,7 +15,7 @@ let gameData = JSON.parse(localStorage.getItem("surviveGameDataV8")) || {
 };
 
 function saveGame() {
-    localStorage.setItem("surviveGameDataV8", JSON.stringify(gameData));
+    localStorage.setItem("surviveGameDataV6", JSON.stringify(gameData));
 }
 
 // 5 Personajes con sus armas configuradas
@@ -77,7 +77,7 @@ let player = {
     x: canvas.width / 2,
     y: canvas.height / 2,
     size: 20,
-    speed: 3.5,
+    speed: 1.5,
     maxHp: 100 + gameData.maxHpBonus,
     hp: 100 + gameData.maxHpBonus,
     attackSpeedMultiplier: 1,
@@ -210,7 +210,7 @@ window.startGame = function() {
     
     player.maxHp = 100 + gameData.maxHpBonus;
     player.hp = player.maxHp;
-    player.speed = 3.5;
+    player.speed = 1.5;
     player.attackSpeedMultiplier = 1;
     player.extraProjectiles = 0;
     player.hasShield = false;
@@ -247,7 +247,7 @@ setInterval(() => {
         x: Math.random() < 0.5 ? 0 : canvas.width,
         y: Math.random() * canvas.height,
         size: 12,
-        speed: 1.6,
+        speed: gameTime/15+1,
         hp: gameTime/10
     });
 }, 1200);
