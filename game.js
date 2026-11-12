@@ -6,7 +6,7 @@ let bgImage = new Image();
 bgImage.src = "img/fondo.png";
 
 let gameData = JSON.parse(localStorage.getItem("surviveGameDataV6")) || {
-    coins: 100,
+    coins: 0,
     selectedChar: 0,
     unlockedChars: [true, false, false, false, false],
     maxHpBonus: 0,
