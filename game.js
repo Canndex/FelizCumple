@@ -4,7 +4,7 @@ const ctx = canvas.getContext("2d");
 let bgImage = new Image();
 bgImage.src = "img/fondo.png";
 
-let gameData = JSON.parse(localStorage.getItem("surviveGameDataV6")) || {
+let gameData = JSON.parse(localStorage.getItem("surviveGameDataV8")) || {
     coins: 0,
     selectedChar: 0,
     unlockedChars: [true, false, false, false, false],
@@ -15,7 +15,7 @@ let gameData = JSON.parse(localStorage.getItem("surviveGameDataV6")) || {
 };
 
 function saveGame() {
-    localStorage.setItem("surviveGameDataV6", JSON.stringify(gameData));
+    localStorage.setItem("surviveGameDataV8", JSON.stringify(gameData));
 }
 
 // 5 Personajes con sus armas configuradas
@@ -77,7 +77,7 @@ let player = {
     x: canvas.width / 2,
     y: canvas.height / 2,
     size: 20,
-    speed: 3.5,
+    speed: 210, // Pixeles por segundo (independiente de los Hz)
     maxHp: 100 + gameData.maxHpBonus,
     hp: 100 + gameData.maxHpBonus,
     attackSpeedMultiplier: 1,
@@ -107,7 +107,9 @@ let maxExp = 5;
 let bossSpawned = false;
 let boss = null;
 
-// Renderizar fichas laterales
+// Control de tiempo (Delta Time)
+let lastTime = 0;
+
 function renderLoreCards() {
     let leftContainer = document.getElementById("leftLore");
     let rightContainer = document.getElementById("rightLore");
@@ -210,7 +212,7 @@ window.startGame = function() {
     
     player.maxHp = 100 + gameData.maxHpBonus;
     player.hp = player.maxHp;
-    player.speed = 1.5;
+    player.speed = 210;
     player.attackSpeedMultiplier = 1;
     player.extraProjectiles = 0;
     player.hasShield = false;
@@ -246,9 +248,9 @@ setInterval(() => {
     enemies.push({
         x: Math.random() < 0.5 ? 0 : canvas.width,
         y: Math.random() * canvas.height,
-        size: 12,
-        speed: player.speed + gameTime/10,
-        hp: gameTime/10
+        size: 14,
+        speed: 95, // Pixeles por segundo
+        hp: 2
     });
 }, 1200);
 
@@ -269,9 +271,9 @@ function spawnBoss() {
         x: canvas.width / 2,
         y: -50,
         size: 45,
-        speed: 0.9,
-        maxHp: 300,
-        hp: 300
+        speed: 55, // Pixeles por segundo
+        maxHp: 120,
+        hp: 120
     };
     enemies.push(boss);
 }
@@ -289,8 +291,8 @@ function shootWeapon() {
             bullets.push({
                 x: player.x,
                 y: player.y,
-                dx: Math.cos(angle) * 5,
-                dy: Math.sin(angle) * 5,
+                dx: Math.cos(angle) * 320, // Pixeles por segundo
+                dy: Math.sin(angle) * 320,
                 size: 4,
                 damage: baseDamage
             });
@@ -312,7 +314,7 @@ function shootWeapon() {
     }
 
     let angle = Math.atan2(closestEnemy.y - player.y, closestEnemy.x - player.x);
-    let speedBullet = 6;
+    let speedBullet = 360; // Pixeles por segundo
 
     if (weaponType === "lineal") {
         bullets.push({ x: player.x, y: player.y, dx: Math.cos(angle) * speedBullet, dy: Math.sin(angle) * speedBullet, size: 6 + totalProj, damage: baseDamage });
@@ -324,11 +326,9 @@ function shootWeapon() {
         bullets.push({ x: player.x - Math.cos(perpAngle) * offset, y: player.y - Math.sin(perpAngle) * offset, dx: Math.cos(angle) * speedBullet, dy: Math.sin(angle) * speedBullet, size: 5, damage: baseDamage });
     } 
     else if (weaponType === "lenta_grande") { 
-        // Slug: Proyectil más grande
-        bullets.push({ x: player.x, y: player.y, dx: Math.cos(angle) * 3.5, dy: Math.sin(angle) * 3.5, size: 14 + (totalProj * 2), damage: baseDamage + 3 });
+        bullets.push({ x: player.x, y: player.y, dx: Math.cos(angle) * 210, dy: Math.sin(angle) * 210, size: 14 + (totalProj * 2), damage: baseDamage + 3 });
     }
     else if (weaponType === "doble_cuadruple") { 
-        // Gatling: 4 proyectiles en 2 direcciones diferentes
         let perpAngle = angle + Math.PI / 2;
         let offset = 6;
         bullets.push({ x: player.x + Math.cos(perpAngle) * offset, y: player.y + Math.sin(perpAngle) * offset, dx: Math.cos(angle) * speedBullet, dy: Math.sin(angle) * speedBullet, size: 5, damage: baseDamage });
@@ -340,36 +340,39 @@ function shootWeapon() {
     }
 }
 
-function update() {
+function update(dt) {
     // Las partículas de confeti siempre se actualizan si existen
     confettiParticles.forEach((p, index) => {
-        p.x += p.dx;
-        p.y += p.dy;
+        p.x += p.dx * dt;
+        p.y += p.dy * dt;
         p.life--;
         if (p.life <= 0) confettiParticles.splice(index, 1);
     });
 
     if (!gameRunning || isPaused) return;
 
-    if ((keys["ArrowUp"] || keys["w"] || keys["W"]) && player.y > player.size) player.y -= player.speed;
-    if ((keys["ArrowDown"] || keys["s"] || keys["S"]) && player.y < canvas.height - player.size) player.y += player.speed;
-    if ((keys["ArrowLeft"] || keys["a"] || keys["A"]) && player.x > player.size) player.x -= player.speed;
-    if ((keys["ArrowRight"] || keys["d"] || keys["D"]) && player.x < canvas.width - player.size) player.x += player.speed;
+    if ((keys["ArrowUp"] || keys["w"] || keys["W"]) && player.y > player.size) player.y -= player.speed * dt;
+    if ((keys["ArrowDown"] || keys["s"] || keys["S"]) && player.y < canvas.height - player.size) player.y += player.speed * dt;
+    if ((keys["ArrowLeft"] || keys["a"] || keys["A"]) && player.x > player.size) player.x -= player.speed * dt;
+    if ((keys["ArrowRight"] || keys["d"] || keys["D"]) && player.x < canvas.width - player.size) player.x += player.speed * dt;
 
-    shootTimer++;
-    let fireInterval = Math.max(10, Math.floor(30 / player.attackSpeedMultiplier));
-    if (shootTimer % fireInterval === 0) shootWeapon();
+    shootTimer += dt;
+    let fireInterval = Math.max(0.15, 0.5 / player.attackSpeedMultiplier);
+    if (shootTimer >= fireInterval) {
+        shootTimer = 0;
+        shootWeapon();
+    }
 
     bullets.forEach((b, index) => {
-        b.x += b.dx;
-        b.y += b.dy;
+        b.x += b.dx * dt;
+        b.y += b.dy * dt;
         if (b.x < 0 || b.x > canvas.width || b.y < 0 || b.y > canvas.height) bullets.splice(index, 1);
     });
 
     enemies.forEach((e, eIndex) => {
         let angle = Math.atan2(player.y - e.y, player.x - e.x);
-        e.x += Math.cos(angle) * e.speed;
-        e.y += Math.sin(angle) * e.speed;
+        e.x += Math.cos(angle) * e.speed * dt;
+        e.y += Math.sin(angle) * e.speed * dt;
 
         if (Math.hypot(player.x - e.x, player.y - e.y) < player.size + e.size) {
             if (!player.hasShield) {
@@ -395,7 +398,6 @@ function update() {
         if (e.hp <= 0) {
             gameData.statsKills++;
             
-            // Si muere el Jefe Gigante, estalla en confeti y da la victoria
             if (boss && e === boss) {
                 triggerConfettiExplosion(boss.x, boss.y);
                 gameRunning = false;
@@ -413,14 +415,13 @@ function update() {
         }
     });
 
-    // Imán temporal
     let pullRadius = player.hasMagnet ? 180 : (player.size + 12);
 
     coins.forEach((c, cIndex) => {
         let dist = Math.hypot(player.x - c.x, player.y - c.y);
         if (player.hasMagnet && dist < pullRadius) {
-            c.x += (player.x - c.x) * 0.12;
-            c.y += (player.y - c.y) * 0.12;
+            c.x += (player.x - c.x) * 4 * dt;
+            c.y += (player.y - c.y) * 4 * dt;
         }
         if (dist < player.size + 10) {
             gameData.coins++;
@@ -433,8 +434,8 @@ function update() {
     expGems.forEach((gem, gIndex) => {
         let dist = Math.hypot(player.x - gem.x, player.y - gem.y);
         if (player.hasMagnet && dist < pullRadius) {
-            gem.x += (player.x - gem.x) * 0.12;
-            gem.y += (player.y - gem.y) * 0.12;
+            gem.x += (player.x - gem.x) * 4 * dt;
+            gem.y += (player.y - gem.y) * 4 * dt;
         }
         if (dist < player.size + 10) {
             playerExp++;
@@ -453,8 +454,8 @@ function triggerConfettiExplosion(x, y) {
         confettiParticles.push({
             x: x,
             y: y,
-            dx: (Math.random() - 0.5) * 12,
-            dy: (Math.random() - 0.5) * 12,
+            dx: (Math.random() - 0.5) * 350, // Pixeles por segundo
+            dy: (Math.random() - 0.5) * 350,
             color: ['#ecc94b', '#9f7aea', '#4fd1c5', '#f56565', '#ed64a6', '#48bb78'][Math.floor(Math.random() * 6)],
             size: Math.random() * 7 + 3,
             life: 120
@@ -462,7 +463,6 @@ function triggerConfettiExplosion(x, y) {
     }
 }
 
-// Subida de Nivel con las 5 opciones elegidas
 function triggerLevelUp() {
     isPaused = true;
     playerLevel++;
@@ -474,7 +474,7 @@ function triggerLevelUp() {
     choicesContainer.innerHTML = "";
 
     let possibleUpgrades = [
-        { title: "⚡ Velocidad de Movimiento +", action: () => { player.speed += 0.8; } },
+        { title: "⚡ Velocidad de Movimiento +", action: () => { player.speed += 45; } },
         { title: "🚀 Velocidad de Ataque +", action: () => { player.attackSpeedMultiplier += 0.3; } },
         { title: "🎯 Aumento de Proyectiles", action: () => { player.extraProjectiles += 1; } },
         { title: "🧲 Imán Temporal (Atracción)", action: () => { player.hasMagnet = true; setTimeout(() => { player.hasMagnet = false; }, 8000); } },
@@ -518,7 +518,6 @@ function draw() {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Dibujar Escudo si está activo
     if (player.hasShield) {
         ctx.strokeStyle = "#4fd1c5";
         ctx.lineWidth = 3;
@@ -537,16 +536,13 @@ function draw() {
         ctx.fill();
     }
 
-    // Dibujar Enemigos normales y Jefe Gigante
     enemies.forEach(e => {
         if (e === boss) {
-            // Dibujo del Jefe Gigante
             ctx.fillStyle = "#d69e2e";
             ctx.beginPath();
             ctx.arc(e.x, e.y, e.size, 0, Math.PI * 2);
             ctx.fill();
 
-            // Barra de vida del jefe
             ctx.fillStyle = "#e53e3e";
             ctx.fillRect(e.x - 35, e.y - 60, 70, 7);
             ctx.fillStyle = "#48bb78";
@@ -574,13 +570,12 @@ function draw() {
     });
 
     ctx.fillStyle = "#3182ce";
-    expGems.forEach(g => {
+    expGems.exports = expGems.forEach(g => {
         ctx.beginPath();
         ctx.arc(g.x, g.y, 4, 0, Math.PI * 2);
         ctx.fill();
     });
 
-    // Dibujar Confetti
     confettiParticles.forEach(p => {
         ctx.fillStyle = p.color;
         ctx.beginPath();
@@ -589,12 +584,19 @@ function draw() {
     });
 }
 
-function loop() {
-    update();
+function loop(timestamp) {
+    if (!lastTime) lastTime = timestamp;
+    let dt = (timestamp - lastTime) / 1000; // Segundos transcurridos desde el último frame
+    lastTime = timestamp;
+
+    // Limitar dt máximo por si la pestaña se minimiza para evitar saltos gigantes
+    if (dt > 0.1) dt = 0.1;
+
+    update(dt);
     draw();
     requestAnimationFrame(loop);
 }
 
 renderLoreCards();
 updateSidePanel();
-loop();
+requestAnimationFrame(loop);
