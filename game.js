@@ -77,7 +77,7 @@ let player = {
     x: canvas.width / 2,
     y: canvas.height / 2,
     size: 20,
-    speed: 1.5,
+    speed: 0.1,
     maxHp: 100 + gameData.maxHpBonus,
     hp: 100 + gameData.maxHpBonus,
     attackSpeedMultiplier: 1,
